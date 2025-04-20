@@ -1,0 +1,195 @@
+Estimación de complejidad para Cola de Prioridad
+=======================================================================================================================
+ public void add(Key elemento) {          
+        Node<Key> nuevoNodo = new Node<Key>(elemento);	=> Complejidad O(1) porque es una operación de asignación constante. 
+        if (root == null) {                             => Complejidad O(1) porque es una asignación y comparación simple.
+            root = nuevoNodo;                           => Complejidad O(1) porque es una asignación.
+        } else {
+            Node<Key> padre = getNode((size + 1) / 2);  => Llamada de método getNode() con complejidad O(log(n)).
+            if (size % 2 == 0) {                        => Complejidad O(1) por comparación simple.
+                padre.right = nuevoNodo;                => Complejidad O(1) por asignación simple.
+            } else {
+                padre.left = nuevoNodo;                 => Complejidad O(1) por asignación simple.
+            }
+            nuevoNodo.father = padre;                   => Complejidad O(1) por asignación simple.
+        }
+        size++;                                         => Se incrementa el atributo size. Complejidad O(1) por asignación simple.
+        siftUp();                                       => Llamada de método siftUp() con complejidad O(log(n)).
+    }
+
+* Debido al Teorema II: 𝑆𝑖 𝐴1 𝑦 𝐴2 𝑠𝑜𝑛 𝑎𝑙𝑔𝑜𝑟𝑖𝑡𝑚𝑜𝑠,𝑡𝑎𝑙𝑒𝑠 𝑞𝑢𝑒 𝑇𝐴1(𝑛)𝑒𝑠 𝑂(𝑓1(𝑛)) 𝑦 𝑇𝐴2(𝑛)𝑒𝑠 𝑂(𝑓2(𝑛)),𝑒𝑙 𝑡𝑖𝑒𝑚𝑝𝑜 𝑒𝑛𝑒𝑗𝑒𝑐𝑢𝑡𝑎𝑟𝑠𝑒𝐴1 𝑠𝑒𝑔𝑢𝑖𝑑𝑜 𝑑𝑒 𝐴2 𝑒𝑠 𝑂(max(𝑓1(𝑛), 𝑓2(𝑛))) se puede
+afirmar que los bloques de código que predominarán sobre la cota asintótica superior será O(log(n)), por lo que la complejidad total del método
+void add(key elemento) es O(log(n)).
+========================================================================================================================
+ public Node<Key> getNode(int index) {
+        if (index < 1 || index > size) {                => Complejidad O(1) por comparación simple ya que index y size deben ser conocidos previamente como constantes.
+            return null;                                => Complejidad O(1) por retorno.
+        }
+        Node<Key> node = root;                          => Complejidad O(1) por asignación simple.
+        int path = index;                               => Complejidad O(1) por asignación simple.
+        int depth = 0;                                  => Complejidad O(1) por asignación simple.
+        while (path > 1) {                              => Se utiliza para hallar la profundidad del árbol. Sustentación en * de esta sección. Complejidad O(log(n)).
+            path /= 2;                                  => Complejidad O(1) por asignación.
+            depth++;                                    => Complejidad O(1) por asignación.
+        }                                               => Al utilizar Teorema II en este bloque While se cumple con que el bloque tiene complejidad O(log(n)).
+        path = index;                                   => Complejidad O(1) por asignación.
+        for (int i = depth - 1; i >= 0; i--) {          => Se utiliza para recorrer el árbol en función de su profundidad. Debido a esto, su complejidad es O(log(n)).
+            if (node == null) {                         => Complejidad O(1) por asignación.
+                return null;                            => Complejidad O(1) por retorno.
+            }
+            boolean isLeft = ((path >> i) & 1) == 0;    => Complejidad O(1) por asignación.
+            node = isLeft ? node.left : node.right;     => Complejidad O(1) por asignación
+        }
+        return node;					=> Complejidad O(1) por asignación.
+    }
+
+* La profundidad (altura) de un árbol binario se define a través de: n = 2^(h+1) - 1, donde n es el número total de nodos y h es la profundidad o altura del árbol.
+Por ejemplo, si tenemos un árbol con altura 0 quiere decir que tendremos un número de nodos = 1, que es la raíz. Para un árbol de altura 1 tendremos un total de
+n = 2^(2)-1 nodos, por lo que en el caso ideal en el que esté completo este tendrá 3 nodos.
+Haciendo un simple proceso de despeje se puede hallar la profundidad de la siguiente manera: 
+log(n) = log(2^(h+1)-1)
+log(n)=h+1-1 [Ignorando las constantes ya que solo se requiere la cota superior] => h = log(n), claramente el logaritmo en base 2.
+Esto quiere decir que para toda operación que requiera recorrer la profundidad desconocida de un árbol binario tendrá una complejidad en el peor de los casos de
+O(log(n)), ya que esto quiere decir que tendrá que recorrer su altura máxima para llegar al nodo (caso getNode() y el bucle for que también lo necesita).
+
+En todo caso y teniendo en cuenta la aplicación del Teorema II, la complejidad para el método getNode() se define como O(log(n)) en el peor de los casos y O(1) en el
+mejor de los casos (es el caso donde el nodo que se quiere hallar es la raíz).
+==================================================================================================
+    public Key peek() {
+        if (root != null) {                             => Complejidad O(1) por comparación simple.
+            return root.getKey();                       => Complejidad O(1) por retorno.
+        }
+        return null;                                    => Complejidad O(1) por retorno.
+    }
+
+* En conclusión, acorde al Teorema II, la complejidad para el método peek() se define como O(1) ya que siempre va a retornar la raíz del árbol, independientemente si es
+maxHeap o minHeap, ya que para el maxHeap el elemento mayor se encuentra en la raíz, y en el minHeap el elemento menor también se encuentra en la raíz.
+=====================================================================================================
+    public Key poll() {
+        if (root == null) {                             => Complejidad O(1) por comparación simple.
+            return null;                                => Complejidad O(1) por retorno.
+        }
+        Key result = root.getKey();                     => Complejidad O(1) por asignación simple (En el caso del getKey(), se utiliza O(1) por retornar la raíz).
+        if (size == 1) {
+            root = null;                                => Complejidad O(1) por asignación simple.
+        } else {
+            Node<Key> lastNode = getNode(size);         => Complejidad O(log(n)) debido a que utiliza getNode() con el tamaño del árbol [Ver getNode() en *]
+            exch(root, lastNode);                       => Complejidad O(1) porque es un simple intercambio de posiciones entre dos nodos conocidos.
+            if (lastNode.father.right == lastNode) {    => Complejidad O(1) por comparación simple.
+                lastNode.father.right = null;           => Complejidad O(1) por asignación simple.
+            } else {
+                lastNode.father.left = null;            => Complejidad O(1) por asignación simple.
+            }
+        }
+        if (root != null) {                             => Complejidad O(1) por comparación simple.
+            siftDown();                                 => Complejidad O(log(n)) porque recorre la altura del árbol desde la raíz hasta el fondo en el peor de los casos.
+        }
+        size--;                                         => Complejidad O(1) por asignación simple.
+        return result;                                  => Complejidad O(1) por retorno.
+    }
+
+* Acorde al Teorema II, la complejidad para el método poll() es de O(log(n)) debido a que utiliza el getNode(size) donde el size es el número de nodos que puede variar,
+y el siftDown() que restaura la propiedad de heap al hundir el nodo que viola la regla hasta su posición correcta utilizando el CompareTo().
+===========================================================================================================
+public void siftUp() {
+   Node<Key> node = getNode(size);                             => Complejidad O(log(n)) por utilizar el getNode(size) con un size dependiente del número de nodos.
+   while (node.father != null && less(node.father, node)) {    => Complejidad O(1) por comparación en ambos lados. En less() es O(1). El bucle de por sí tiene O(log(n)).
+       exch(node, node.father);                                => Complejidad O(1) por intercambio de posiciones entre dos nodos conocidos.
+       node = node.father;                                     => Complejidad O(1) por asignación simple.
+    }
+}
+
+* La razón por la cual el bucle While es de complejidad O(log(n)) es la distancia que se maneja desde el nodo encontrado con el método getNode(size), por lo que 
+discretamente dependerá de la profundidad del árbol debido a la asignación del getNode() a node. El nodo seguirá desplazándose hacia arriba hasta que el compareTo()
+deje de permitirlo. En este caso y por el Teorema II, la complejidad del método siftUp() es O(log(n)).
+============================================================================================================
+public void siftDown() {
+    Node<Key> node = root;                                                                                => Complejidad O(1) por asignación.
+    while (node.left != null) {                                                                           => Complejidad O(log(n)) por recorrido de raíz hasta hojas.
+       Node<Key> maxChild = (node.right != null && less(node.left, node.right)) ? node.right : node.left; => Complejidad O(1) por comparación simple.
+       if (!less(node, maxChild)) {             						          => Complejidad O(1) por comparación simple.
+            break;
+       }
+       exch(node, maxChild);										  => Complejidad O(1) por intercambio de nodos.
+       node = maxChild;											  => Complejidad O(1) por asignación simple.
+    }
+}
+
+* En este método se utiliza un recorrido desde la raíz hasta el nodo correcto (profundidad adecuada) para situar el nodo que se quiere desplazar. El bucle while está
+en función de esto, así que la complejidad por Teorema II del método siftDown() será de O(log(n)).
+=============================================================================================================
+public void agregarPedido(String nombreAutor, double precio, int cercania) {
+        Pedido nuevoPedido = new Pedido(precio, nombreAutor, cercania);
+        Pedido.comparePorPrecio = true;
+        pedidosRecibidos.add(nuevoPedido);
+        System.out.println("PEDIDOS RECIBIDOS: " + pedidosRecibidos.toString());
+    }
+
+* Al utilizar el add(nuevoPedido) y ser las otras asignaciones de complejidad O(1), agregar un pedido al heap tiene complejidad O(log(n)) debido al análisis previo. En
+este caso particular, el método toString() tiene un orden de complejidad de O(nlog(n)) debido a que tiene que recorrer toda la profundidad del heap. En este caso,
+recorrer e imprimir todo el heap tiene un orden O(n) ya que se tiene que imprimir cada nodo en su respectivo orden dependiendo a su tamaño, y conseguir la profundidad
+del árbol para hacerlo es O(log(n)), lo que quiere decir que por Teorema III, la complejidad de agregar pedido SOLAMENTE por esta diferencia de añadir el toString() 
+[Añadir el toString() es completamente opcional] es de O(nlog(n)), siendo similar a como funciona un HeapSort.
+==============================================================================================================
+ public Pedido atenderPedido() {
+        if (pedidosRecibidos.isEmpty() == false) {
+            Pedido.comparePorPrecio = true;
+            Pedido pedidoAtendido = pedidosRecibidos.poll();
+            Pedido.comparePorPrecio = false;
+            colaDespachos.add(pedidoAtendido);
+            System.out.println("PEDIDOS RECIBIDOS: " + pedidosRecibidos.toString());
+            System.out.println("COLA DE DESPACHOS: " + colaDespachos.toString());
+            return pedidoAtendido;
+        }
+        return null;
+    }
+
+* La comparación inicial con isEmpty() es de complejidad O(1). La utilización del poll() es de O(log(n)) debido al análisis previo, de igual manera que el add() para 
+cola de despachos. Esto quiere decir que retirar el elemento máximo del heap y a su vez reorganizarlo tendrá una complejidad O(log(n)) y también añadir al heap de
+cola de despachos, con la única diferencia que lo añadirá con un CompareTo invertido (Esto para formar un minHeap en vez de un maxHeap). En este caso al añadir el
+toString() de manera opcional, la complejidad es similar al caso de agregarPedido(), siendo de O(nlog(n)). Sin el uso del toString() seguriá siendo O(log(n)).
+================================================================================================================
+ public Pedido despacharPedido() {
+        if (colaDespachos.isEmpty() == false) {
+            Pedido.comparePorPrecio = false;
+            Pedido pedidoDespachado = colaDespachos.poll();
+            System.out.println("COLA DE DESPACHOS: " + colaDespachos.toString());
+            return pedidoDespachado;
+        }
+        return null;
+    }
+
+* El caso es similar al atender pedido, con la diferencia que el poll() se aplica a la cola de despachos. De igual manera, por el uso del toString() se considera una
+complejidad de O(nlog(n)), pero, con el funcionamiento del método en crudo se considera una complejidad O(log(n)).
+=================================================================================================================
+  public ArrayList<Pedido> pedidosRecibidosList() {
+        ArrayList<Pedido> listaPedidosRecibidos = new ArrayList<>();
+        for (int i = 1; i <= pedidosRecibidos.size(); i++) {
+            listaPedidosRecibidos.add(pedidosRecibidos.getNodeKey(i));
+        }
+        return listaPedidosRecibidos;
+    }
+    public ArrayList<Pedido> colaDespachosList() {
+        ArrayList<Pedido> listaDespachos = new ArrayList<>();
+        for (int i = 1; i <= colaDespachos.size(); i++) {
+            listaDespachos.add(colaDespachos.getNodeKey(i));
+        }
+        return listaDespachos;
+    }
+
+* En el caso de estos dos métodos que funcionan exactamente igual, trata de añadir cada elemento del maxHeap y el minHeap a dos ArrayList distintos. Entonces, se 
+presentan dos casos particulares. El bucle for en ambos casos va desde el índice 1 hasta el tamaño del heap, que al ser desconocido es de tamaño n, dando así una
+complejidad O(n) únicamente para el bucle for. En cuanto al contenido de ambos, llama a un método que se llama getNodeKey(i) que es el siguiente:
+
+ public Key getNodeKey(int index) {
+        Node<Key> node = getNode(index);
+        if (node != null) {
+            return node.getKey();
+        }
+        return null;
+    }
+
+* Este método lo que hace es llamar a su vez a getNode(index), que tiene una complejidad O(log(n)) ya que dependiendo al index que se le pase como parámetro tendrá que
+recorrer la profundidad del árbol. En tal caso, getNodeKey(index) tendrá complejidad máxima de O(log(n)) debido al teorema II.
+Debido a que el contenido de ambos for utiliza este getNodeKey(index) y también el for tiene su propia complejidad que no es constante, entonces se utilizará el
+Teorema III, con el que en ambos métodos que utilicen el ArrayList se tendrá una complejidad de O(nlog(n)), similar a un HeapSort.
