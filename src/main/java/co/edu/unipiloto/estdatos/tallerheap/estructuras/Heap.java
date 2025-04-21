@@ -14,7 +14,7 @@ public class Heap<Key extends Comparable<Key>> implements IHeap<Key> {
     private Node<Key> root;
     private int size;
 
-    public Heap(boolean isMinHeap) {
+    public Heap() {
         this.root = null;
         this.size = 0;
     }
