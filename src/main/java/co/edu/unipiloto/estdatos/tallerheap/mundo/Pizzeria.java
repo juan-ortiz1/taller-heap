@@ -59,8 +59,8 @@ public class Pizzeria {
      * Constructor de la case Pizzeria
      */
     public Pizzeria() {
-        pedidosRecibidos = new Heap(false);
-        colaDespachos = new Heap(true);
+        pedidosRecibidos = new Heap();
+        colaDespachos = new Heap();
     }
 
     // ----------------------------------
